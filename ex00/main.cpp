@@ -4,21 +4,18 @@ int main(int ac, char ** av){
 	try
 	{
 		if (ac < 2)
-			throw (NotEnoughArgumentsException());
+			throw (FileException("Error: The program must take at least one argument!"));
 		if (ac > 2)
-			throw (TooManyArgumentsException());
+			throw (FileException("Error: The program must take only one argument!"));
 		if (strlen(av[1]) < 1)
-			throw (InvalidInputException());
-		std::string filename(av[1]);
-		Exchange	btc(filename);
+			throw (FileException("Error: Invalid file!"));
+		Exchange	btc(static_cast<std::string> (av[1]));
 		btc.parseFile();
 		std::cout << btc <<std::endl;
 	}
 	catch (std::exception &e){std::cout << e.what() << std::endl;}
 }
 
-
-
-		/*
-		if (strncmp(".txt", filename.substr(filename.length() - 4,4).c_str(), 4) != 0)
-			throw (InvalidExtensionException());*/
+/*
+if (strncmp(".txt", filename.substr(filename.length() - 4,4).c_str(), 4) != 0)
+	throw (InvalidExtensionException());*/

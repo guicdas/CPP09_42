@@ -6,9 +6,9 @@ Exchange::Exchange( void ) : database("data.csv"), year(std::list<int>()), month
 
 Exchange::Exchange( std::string s ) : file(s.c_str()), database("data.csv"), year(std::list<int>()), month(std::list<int>()), day(std::list<int>()), rate(std::list<int>()){
 	if (!this->file.is_open())
-		throw (OpenErrorException());
+		throw (FileException("d"));
 	if (!this->database.is_open())
-		throw (OpenErrorException());
+		throw (FileException("d"));
 }
 
 Exchange::~Exchange( void ){
@@ -37,8 +37,7 @@ static int	isInt(const std::string& s)
 	return (1);
 }
 
-static int	isFloat(const std::string& s, size_t& dot)
-{
+static int	isFloat(std::string const &s, size_t const &dot){
 	for (int i = dot - 1; i >= 0; i--)
 	{
 		if ((s[i] < '0' || s[i] > '9') && i != 0)
@@ -57,44 +56,50 @@ static int	isFloat(const std::string& s, size_t& dot)
 }
 
 void	Exchange::parseLines( std::string s ){
-	std::size_t	num;
+	std::size_t	foundBefore = 0;
 	std::size_t	found;
-	std::size_t	foundBefore;
+	long long	num;
 
-	found = s.find('-', 0);
+	found = s.find('-', foundBefore);
 	if (found == std::string::npos)
-		throw (InvalidfileFormatException());
-	num = std::atoi(s.substr(0, found).c_str());
+		throw (FileException("Error: database has an empty line!"));
+	if (!isInt(s.substr(foundBefore, found)))
+		throw (FileException("d"));
+	num = std::atoll(s.substr(foundBefore, found).c_str());
 	if (num > 2024)
-		throw (ErrorInDatabaseException());
+		throw (FileException("d"));
 	year.push_back(num);
 
 	foundBefore = found;
 	found = s.find('-', foundBefore);
 	if (found == std::string::npos)
-		throw (InvalidfileFormatException());
-	num = std::atoi(s.substr(foundBefore, found).c_str());
+		throw (FileException("d"));
+	if (!isInt(s.substr(foundBefore, found)))
+		throw (FileException("d"));
+	num = std::atoll(s.substr(foundBefore, found).c_str());
 	if (num < 0 || num > 12)
-		throw (ErrorInDatabaseException());
+		throw (FileException("d"));
 	month.push_back(num);
 
 	foundBefore = found;
 	found = s.find('-', foundBefore);
 	if (found == std::string::npos)
-		throw (InvalidfileFormatException());
+		throw (FileException("d"));
+	if (!isInt(s.substr(foundBefore, found)))
+		throw (FileException("d"));
 	num = std::atoi(s.substr(foundBefore, found).c_str());
-	if (!isInt(num, s.find('.')<-) && !isFloat(num, s.find('.')))
-		throw (ErrorInDatabaseException());
+	if (num < 0 || num > 31)
+		throw (FileException("d"));
 	day.push_back(num);
 	
 	foundBefore = found;
 	found = s.find('-', foundBefore);
-	found = s.find('-', found);
 	if (found == std::string::npos)
-		throw (InvalidfileFormatException());
+		throw (FileException("d"));
 	num = std::atoi(s.substr(0, found).c_str());
-	if (num < 0 || num > 31)
-		throw (ErrorInDatabaseException());
+	if ((!isInt(s.substr(foundBefore, found))) && (!isFloat(s.substr(foundBefore, found), s.find('.', 0))))
+		throw (FileException("d"));
+	num = std::atoi(s.substr(foundBefore, found).c_str());
 	rate.push_back(num);
 }
 
@@ -103,11 +108,11 @@ void Exchange::parseFile( void ){
 
 	getline(database, s);
 	if (strcmp("date,exchange_rate", s.c_str()) != 0)
-		throw (BadDatabaseFormattingException());
+		throw (FileException("d"));
 	while (getline(database, s))
 	{
 		if (s.length() < 1)
-			throw (ErrorInDatabaseException());
+			throw (FileException("d"));
 		parseLines(s);
 	}
 }
@@ -121,4 +126,10 @@ std::ostream &operator<<(std::ostream & os, Exchange const &e){
 	for (; itYear != e.year.end() ; itYear++, itMonth++, itDay++, itRate++)
 		os << *itYear << "-" << *itMonth << "-" << *itDay << ", "<< *itRate << std::endl;
 	return (os);
+}
+
+
+FileException::FileException( const char* msg ) : message(msg) {}
+const char * FileException::what( void ) const throw(){
+		return (message.c_str());
 }
