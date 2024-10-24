@@ -5,7 +5,8 @@
 #include <fstream>
 #include <string>
 #include <cstring>
-#include <list>
+#include <map>
+#include <utility>
 #include <stdlib.h>
 
 class Exchange{
@@ -13,10 +14,7 @@ class Exchange{
 		std::ifstream	file;
 		std::ifstream	database;
 	public:
-		std::list<int>	year;
-		std::list<int>	month;
-		std::list<int>	day;
-		std::list<int>	rate;
+		std::map<std::string, float>	date;
 
 		Exchange( void );
 		Exchange( std::string filename );
@@ -34,6 +32,7 @@ class FileException : public std::exception{
 		std::string message;
 
 	public:
-		explicit	FileException( const char* msg );
+		FileException( const char* msg );
+		~FileException( void ) throw();
 		virtual const char* what() const throw();
 };

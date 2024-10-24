@@ -11,11 +11,7 @@ int main(int ac, char ** av){
 			throw (FileException("Error: Invalid file!"));
 		Exchange	btc(static_cast<std::string> (av[1]));
 		btc.parseFile();
-		std::cout << btc <<std::endl;
+		std::cout << "\n" << btc <<std::endl;
 	}
 	catch (std::exception &e){std::cout << e.what() << std::endl;}
 }
-
-/*
-if (strncmp(".txt", filename.substr(filename.length() - 4,4).c_str(), 4) != 0)
-	throw (InvalidExtensionException());*/
