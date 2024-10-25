@@ -2,26 +2,24 @@
 
 #include <iostream>
 #include <exception>
-#include <fstream>
-#include <stack>
 #include <string>
+#include <stdlib.h>
+#include <vector>
+#include <ctime>
 
-class RPN{
+class PMM{
 	private:
-		std::stack<int>	stack;
-		int			nOps;
+		std::vector<unsigned int> vec;
 
 	public:
-		RPN( void );
-		RPN( const RPN &S );
-        RPN& operator=( const RPN &S );
-		~RPN( void );
+		PMM( void );
+		PMM( const PMM &S );
+        PMM& operator=( const PMM &S );
+		~PMM( void );
 
-	void	push( char c );
-	void	pop( void );
-	int		top( void );
-	void	compute( char c );
-	int		result( void );
+	void	push( unsigned int n );
+	void	showSequence( char const * s );
+	void	sort( void );
 };
 
 class FileException : public std::exception{
