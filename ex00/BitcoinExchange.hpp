@@ -8,14 +8,16 @@
 #include <map>
 #include <utility>
 #include <stdlib.h>
+#include <iterator>
+#include <iomanip>
 
 class Exchange{
 	private:
 		std::ifstream	file;
 		std::ifstream	database;
-	public:
-		std::map<std::string, float>	date;
 
+	public:
+		std::map<std::string, float>	db;
 		Exchange( void );
 		Exchange( std::string filename );
 		~Exchange( void );
