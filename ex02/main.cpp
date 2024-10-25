@@ -21,9 +21,9 @@ int main(int ac, char ** av){
 			pmm.push(static_cast<unsigned int> (num));
 			i++;
 		}
-		pmm.showSequence("Before\t");
+		pmm.showSequence("Before:\t");
 		pmm.sort();
-		pmm.showSequence("After\t");
+		pmm.showSequence("After:\t");
 	}
 	catch (std::exception &e){std::cerr << e.what() << std::endl;}
 }

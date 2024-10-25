@@ -3,9 +3,9 @@
 #include <iostream>
 #include <exception>
 #include <string>
-#include <stdlib.h>
 #include <vector>
-#include <ctime>
+#include <ctime>		//clock
+#include <algorithm>
 
 class PMM{
 	private:
