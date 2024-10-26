@@ -1,20 +1,17 @@
 #include "RPN.hpp"
 
-RPN::RPN( void ) : stack(std::stack<int>()) , nOps(0){}
+RPN::RPN( void ) : stack(std::stack<int>()) {}
 
 RPN::RPN( const RPN &r ){
     std::cout << "RPN Copy called!\n";
     *this = r;
 }
 
-RPN& RPN::operator=( const RPN &s ){
-    std::cout << "RPN Copy created!\n";
-    if (this != &s)
-	{
-		this->stack = s.stack;
-		this->nOps = s.nOps;
-	}
-    return (*this);
+RPN& RPN::operator=( const RPN &r ){
+	std::cout << "RPN Copy created!\n";
+	if (this != &r)
+		this->stack = r.stack;
+	return (*this);
 }
 
 RPN::~RPN( void ) {}
@@ -35,7 +32,7 @@ void	RPN::compute( char c ) {
 	else
 	{
 		if (this->stack.size() < 2)
-			throw (FileException("Error: Syntax error!"));
+			throw (FileException("Error: Operator has no argument!"));
 		right = this->stack.top();
 		this->stack.pop();
 		left = this->stack.top();
@@ -56,8 +53,8 @@ int	RPN::top( void ) {
 }
 
 int	RPN::result( void ) {
-	if (this->nOps == 0)
-		throw (FileException("Error: Syntax error!"));
+	if (this->stack.size() > 1)
+		throw (FileException("Error: Too much numbers!"));
 	return (this->stack.top());
 }
 

@@ -1,31 +1,35 @@
 #include "BitcoinExchange.hpp"
 
-Exchange::Exchange( void ) : database("data.csv"), db(std::map<std::string, float>()){
-	std::cout << "Exchange created (No file opened)" << std::endl;
-}
-
-Exchange::Exchange( std::string s ) : file(s.c_str()), database("data.csv"), db(std::map<std::string, float>()){
+Exchange::Exchange( void ) : db(std::map<std::string, float>()){
+	std::ifstream	database("data.csv");
+	std::string	s;
 	int		place;
 	float	num;
-	
-	if (!this->file.is_open())
-		throw (FileException("Error: Couldn't open file!"));
-	if (!this->database.is_open())
+
+	if (!database.is_open())
 		throw (FileException("Error: Couldn't open database file!"));
-	getline(this->database, s);
-	while (getline(this->database, s))
+	getline(database, s);
+	while (getline(database, s))
 	{
 		place = s.find(',', 0);
 		num = std::atof(s.substr(++place, s.size() -1).c_str());
 		this->db.insert(std::make_pair(s.substr(0, place - 1), num));
 	}
+	database.close();
 }
 
-Exchange::~Exchange( void ){
-	std::cout << "File and database closed" << std::endl;
-	this->file.close();
-	this->database.close();
+Exchange::Exchange( const Exchange &e ){
+	*this = e;
 }
+
+Exchange& Exchange::operator=( const Exchange &e ){
+	if (this == &e)
+		return (*this);
+	this->db = e.db;
+	return (*this);
+}
+
+Exchange::~Exchange( void ) {}
 
 static int	isInt( std::string const &s )
 {
@@ -139,7 +143,7 @@ static void	checkValue( std::string const &s ){
 	}
 }
 
-void	Exchange::parseLines( std::string s ){
+void	Exchange::parseLines( std::string const &s ){
 	std::size_t	found;
 	std::string	date;
 	float		num;
@@ -151,28 +155,34 @@ void	Exchange::parseLines( std::string s ){
 		throw (FileException("Error: Bad file formatting (yyyy-mm-dd | int/float)!"));
 	date = checkDate(s.substr(0, found - 1));
 	checkValue(s.substr(++found, s.size()));
+	std::cout << "AQUI: "<<s.substr(++found, s.size()).c_str() << std::endl;
 	num = std::atof(s.substr(++found, s.size()).c_str());
 	if (!isInt(s.substr(found, s.size())) && !isFloat(s, s.find('.', 0)))
 		throw (FileException("Error: Value must be an Int or a Float!"));
 
 
+/*std::map<std::string, std::string>::const_iterator	find;
+
+	find = data.lower_bound(target);
+	if ((*find).first == target || find == data.begin())
+		return ((*find).second);
+	--find;
+	return ((*find).second);*/
 	std::map<std::string, float>::const_iterator it = this->db.lower_bound(date);
-	if (this->db.find(date) != this->db.end())
-		std::cout << std::fixed << std::setprecision(1) << it->first << " => " << num << " * " << it->second << " = " << it->second * num << std::endl;
-	else if (it != this->db.end())
-	{
-		if (it != this->db.begin())
-			--it;
+	std::cout << "lower_boud  found " << ((it != db.end()) ? it->first : "end.") << std::endl;
+	if (it == this->db.begin() || strcmp(date.c_str(), it->first.c_str()) == 0)
 		std::cout << std::fixed << std::setprecision(1) << "(" << date << ") "<<  it->first << " => " << num << " * " << it->second << " = " << it->second * num << std::endl;
-	}
-	else
-		std::cout << date << "Not Found\n";
+	--it;
+	std::cout << std::fixed << std::setprecision(1) << "(" << date << ") "<<  it->first << " => " << num << " * " << it->second << " = " << it->second * num << std::endl;
 
 }
 
-void Exchange::parseFile( void ){
+void Exchange::parseFile( char const *inputFile ){
+	std::ifstream	file(inputFile);
 	std::string	s;
 
+	if (!file.is_open())
+		throw (FileException("Error: Couldn't open file!"));
 	getline(file, s);
 	if (strcmp("date | value", s.c_str()) != 0)
 		throw (FileException("Error: Bad file formatting (date | value)!"));
@@ -182,18 +192,21 @@ void Exchange::parseFile( void ){
 		{
 			if (s.length() < 1)
 				throw (FileException("Error: Empty line!"));
-			else
-				parseLines(s);
+			parseLines(s);
 		}
 		catch(const std::exception& e){std::cerr << e.what() << std::endl;}
 	}
 	std::cout << std::endl;
 }
 
-std::ostream &operator<<(std::ostream & os, Exchange const &e){
-	std::map<std::string, float>::const_iterator it = e.db.begin();
+std::map<std::string, float>&	Exchange::getMap( void ){
+	return (this->db);
+}
 
-	for (int i = 0; it != e.db.end() ; it++)
+std::ostream &operator<<(std::ostream & os, Exchange &e){
+	std::map<std::string, float>::const_iterator it = e.getMap().begin();
+
+	for (int i = 0; it != e.getMap().end() ; it++)
 		os << i++ << " " << it->first << "| " << it->second << std::endl;
 	return (os);
 }

@@ -13,21 +13,20 @@
 
 class Exchange{
 	private:
-		std::ifstream	file;
-		std::ifstream	database;
+		std::map<std::string, float>	db;
 
 	public:
-		std::map<std::string, float>	db;
 		Exchange( void );
-		Exchange( std::string filename );
+		Exchange( Exchange const & );
+		Exchange& operator=( Exchange const & );
 		~Exchange( void );
 	
-	void	parseFile( void );
-	void	parseLines( std::string s );
-
+	void							parseFile( char const * );
+	void							parseLines( std::string const & );
+	std::map<std::string, float>&	getMap( void );
 };
 
-std::ostream &operator<<(std::ostream & os, Exchange const &e);
+std::ostream &operator<<(std::ostream & , Exchange & );
 
 class FileException : public std::exception{
 	private:

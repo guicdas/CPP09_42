@@ -2,22 +2,26 @@
 
 int main(int ac, char ** av){
 	std::string s;
-	int	i = 1;
+	size_t	i = 0;
 
 	try
 	{
 		RPN rpn;
 
-		if (ac < 2)
-			throw (FileException("Error: No arguments found!"));
-		while (av[i])
+		if (ac != 2)
+			throw (FileException("Error: Need one and only argument!"));
+		s = av[1];
+		while (s[i])
 		{
-			s = av[i];
-			if (s.length() != 1)
-				throw (FileException("Error: Invalid argument!"));
-			if (s[0] != '+' && s[0] != '-' && s[0] != 'x' && s[0] != '/' && (s[0] > '9' || s[0] < '0'))
+			if (s[i] == ' ')
+			{
+				i++;
+				continue ;
+			}
+			else if (s[i] != '+' && s[i] != '-' && s[i] != 'x' && s[i] != '/' && (s[i] > '9' || s[i] < '0'))
 				throw (FileException("Error: Syntax error!"));
-			rpn.compute(s[0]);
+			else
+				rpn.compute(s[i]);
 			i++;
 		}
 		std::cout << rpn.result() << std::endl;

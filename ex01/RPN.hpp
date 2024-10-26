@@ -9,12 +9,11 @@
 class RPN{
 	private:
 		std::stack<int>	stack;
-		int			nOps;
 
 	public:
 		RPN( void );
-		RPN( const RPN &S );
-        RPN& operator=( const RPN &S );
+		RPN( const RPN & );
+        RPN& operator=( const RPN & );
 		~RPN( void );
 
 	void	push( char c );
@@ -26,7 +25,7 @@ class RPN{
 
 class FileException : public std::exception{
 	private:
-		std::string message;
+		std::string	message;
 
 	public:
 		FileException( const char* msg );

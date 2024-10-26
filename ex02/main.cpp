@@ -24,6 +24,11 @@ int main(int ac, char ** av){
 		pmm.showSequence("Before:\t");
 		pmm.sort();
 		pmm.showSequence("After:\t");
+		std::cout << "Time to process a range of\t" << pmm.getVecSize() << " elements with std::vector :\t";
+		std::cout << static_cast<double>(pmm.getVecTime() * 1000) / CLOCKS_PER_SEC<< " ms"<< std::endl;
+		std::cout << "Time to process a range of\t" << pmm.getLstSize() << " elements with std::list   :\t";
+		std::cout << static_cast<double>(pmm.getLstTime() * 1000) / CLOCKS_PER_SEC << " ms"<< std::endl;
+		pmm.printLst();
 	}
 	catch (std::exception &e){std::cerr << e.what() << std::endl;}
 }
