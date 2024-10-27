@@ -16,7 +16,7 @@ RPN& RPN::operator=( const RPN &r ){
 
 RPN::~RPN( void ) {}
 
-void	RPN::push( char c ) {
+void	RPN::push( long long c ) {
 	this->stack.push(c);
 }
 
@@ -25,24 +25,29 @@ void	RPN::pop( void ) {
 }
 
 void	RPN::compute( char c ) {
-	int	right, left;
+	long long	right, left;
 
-	if (c < '9' && c > '0')
-		this->stack.push(c - 48);
+	if (c <= '9' && c >= '0')
+		push(c - 48);
 	else
 	{
 		if (this->stack.size() < 2)
-			throw (FileException("Error: Operator has no argument!"));
+			throw (FileException("Error: Wrong operator syntax!"));
 		right = this->stack.top();
 		this->stack.pop();
 		left = this->stack.top();
 		this->stack.pop();
-
+		if (left > 2147483647 || right > 2147483647 || left < -2147483648 || right < -2147483648)
+			throw (FileException("Error: Operation will result in overflow!"));
 		switch(c){
-			case '+': this->stack.push(left + right); break;
-			case '-': this->stack.push(left - right); break;
-			case 'x': this->stack.push(left * right); break;
-			case '/': this->stack.push(left / right); break;
+			case '+':	push(left + right); break;
+			case '-':	push(left - right); break;
+			case 'x':	if (left * right > 2147483647)
+							throw (FileException("Error: Operation will result in overflow!"));
+						push(left * right); break;
+			case '/':	if (right == 0)
+							throw (FileException("Error: Division by 0 prohibited!"));
+						push(left / right); break;
 			default: std::cout << "Something went horribly wrong!\n"; break;
 		}
 	}

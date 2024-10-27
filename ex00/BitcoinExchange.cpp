@@ -31,39 +31,15 @@ Exchange& Exchange::operator=( const Exchange &e ){
 
 Exchange::~Exchange( void ) {}
 
-static int	isInt( std::string const &s )
-{
-	int	i;
-	int	num;
-
-	i = 0;
-	if (s.length() == 0 || s.length() > 12)
-		return (0);
-	num = atoi(s.c_str());
-	if (s[i] == '-')
-	{
-		if (num > 0)
-			return (0);
-		return (1);
-	}
-	if (num < 0)
-		return (0);
-	return (1);
-}
-
 static int	isFloat(std::string const &s, size_t const &dot){
 	for (int i = dot - 1; i >= 0; i--)
 	{
-		if ((s[i] < '0' || s[i] > '9') && i != 0)
-			return (0);
-		if ((s[i] < '0' || s[i] > '9') && i == 0 && s[i] != '+' && s[i] != '-')
+		if (s[i] < '0' || s[i] > '9')
 			return (0);
 	}
 	for (size_t i = dot + 1; i < s.length() ; i++)
 	{
-		if ((s[i] < '0' || s[i] > '9') && s[i] != 'f')
-			return (0);
-		if (s[i] == 'f' && i != s.length() - 1)
+		if (s[i] < '0' || s[i] > '9')
 			return (0);
 	}
 	return (1);
@@ -101,8 +77,6 @@ static std::string	checkDate( std::string const &s ){
 	year = findDate(s, f1, 0);
 	if (year > 2024)
 		throw (FileException("Error: Bad year db!"));
-	if (year < 2009)
-		throw (FileException("Error: Bitcoin started in 2009!"));
 	
 	f2 = s.find('-', ++f1);
 	month = findDate(s, f2, f1);
@@ -144,8 +118,8 @@ static void	checkValue( std::string const &s ){
 }
 
 void	Exchange::parseLines( std::string const &s ){
+	std::string	date, substr;
 	std::size_t	found;
-	std::string	date;
 	float		num;
 
 	found = s.find('|', 0);
@@ -155,26 +129,15 @@ void	Exchange::parseLines( std::string const &s ){
 		throw (FileException("Error: Bad file formatting (yyyy-mm-dd | int/float)!"));
 	date = checkDate(s.substr(0, found - 1));
 	checkValue(s.substr(++found, s.size()));
-	std::cout << "AQUI: "<<s.substr(++found, s.size()).c_str() << std::endl;
-	num = std::atof(s.substr(++found, s.size()).c_str());
-	if (!isInt(s.substr(found, s.size())) && !isFloat(s, s.find('.', 0)))
+	substr = s.substr(++found, s.size());
+	num = std::atof(substr.c_str());
+	if (!isInt(substr) && isFloat(substr, substr.find('.', 0)) == 0)
 		throw (FileException("Error: Value must be an Int or a Float!"));
 
-
-/*std::map<std::string, std::string>::const_iterator	find;
-
-	find = data.lower_bound(target);
-	if ((*find).first == target || find == data.begin())
-		return ((*find).second);
-	--find;
-	return ((*find).second);*/
 	std::map<std::string, float>::const_iterator it = this->db.lower_bound(date);
-	std::cout << "lower_boud  found " << ((it != db.end()) ? it->first : "end.") << std::endl;
-	if (it == this->db.begin() || strcmp(date.c_str(), it->first.c_str()) == 0)
-		std::cout << std::fixed << std::setprecision(1) << "(" << date << ") "<<  it->first << " => " << num << " * " << it->second << " = " << it->second * num << std::endl;
-	--it;
-	std::cout << std::fixed << std::setprecision(1) << "(" << date << ") "<<  it->first << " => " << num << " * " << it->second << " = " << it->second * num << std::endl;
-
+	if (date != it->first && it != this->db.begin())
+		--it;
+	std::cout << "(" << date << ") "<<  it->first << "\t=> " << num << "\t* " << it->second << "\t= " << it->second * num << std::endl;
 }
 
 void Exchange::parseFile( char const *inputFile ){

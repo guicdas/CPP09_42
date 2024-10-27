@@ -11,6 +11,8 @@ int main(int ac, char ** av){
 		if (ac != 2)
 			throw (FileException("Error: Need one and only argument!"));
 		s = av[1];
+		if (s.length() < 1)
+			throw (FileException("Error: Empty argument!"));
 		while (s[i])
 		{
 			if (s[i] == ' ')

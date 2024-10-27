@@ -51,7 +51,7 @@ class FileException : public std::exception{
 		std::string message;
 
 	public:
-		FileException( const char* msg );
+		FileException( const char* );
 		~FileException( void ) throw();
 		virtual const char* what() const throw();
 };
