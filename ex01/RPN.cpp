@@ -29,7 +29,7 @@ void	RPN::compute( char c ) {
 
 	if (c <= '9' && c >= '0')
 		push(c - 48);
-	else
+	else if (c == '+' || c == '-' || c == '*' || c == '/')
 	{
 		if (this->stack.size() < 2)
 			throw (FileException("Error: Wrong operator syntax!"));
@@ -37,6 +37,7 @@ void	RPN::compute( char c ) {
 		this->stack.pop();
 		left = this->stack.top();
 		this->stack.pop();
+		//std::cout << right << " " << c << " " << left << std::endl;;
 		if (left > 2147483647 || right > 2147483647 || left < -2147483648 || right < -2147483648)
 			throw (FileException("Error: Operation will result in overflow!"));
 		switch(c){
@@ -51,6 +52,8 @@ void	RPN::compute( char c ) {
 			default: std::cout << "Something went horribly wrong!\n"; break;
 		}
 	}
+	else
+		throw (FileException("Error: Wrong argument!"));
 }
 
 int	RPN::top( void ) {
@@ -60,6 +63,8 @@ int	RPN::top( void ) {
 int	RPN::result( void ) {
 	if (this->stack.size() > 1)
 		throw (FileException("Error: Too much numbers!"));
+	if (this->stack.size() < 1)
+		throw (FileException("Error: No arguments!"));
 	return (this->stack.top());
 }
 
