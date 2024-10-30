@@ -104,7 +104,9 @@ static std::string	checkDate( std::string const &s ){
 		throw (FileException("Error: Bad month input!"));
 	if (year == 2024 && month > 10)
 		throw (FileException("Error: input doesn't exist yet!"));
-	
+	if (year < 2009)
+		throw (FileException("Error: Only values after 2009!"));
+
 	if (++f2 == s.size() - 1)
 		throw (FileException("Error: Bad date formatting (yyyy-mm-dd)!"));
 	str = s.substr(f2, s.size());
@@ -153,11 +155,18 @@ void	Exchange::parseLines( std::string const &s ){
 	num = std::atof(substr.c_str());
 	if (!isInt(substr) && isFloat(substr, substr.find('.', 0)) == 0)
 		throw (FileException("Error: Value must be an Int or a Float!"));
-
+	if (num < 0 || num > 1000)
+		throw (FileException("Error: Value must be between 0 and 1000!"));
+	
 	std::map<std::string, float>::const_iterator it = this->db.lower_bound(date);
-	if (date != it->first && it != this->db.begin())
-		--it;
-	std::cout << "(" << date << ") "<<  it->first << "\t=> " << num << "\t* " << it->second << "\t= " << it->second * num << std::endl;
+	if (it == this->db.end())
+		std::cout << "(" << date << ") "<<  this->db.end()->first << "\t=> " << num << "\t*\t" << this->db.end()->second << "\t= " << it->second * num << std::endl;
+	else 
+	{
+		if (date != it->first && it != this->db.begin())
+			--it;
+		std::cout << "(" << date << ") "<<  it->first << "\t=> " << num << "\t*\t" << it->second << "\t= " << it->second * num << std::endl;
+	}
 }
 
 void Exchange::parseFile( char const *inputFile ){
