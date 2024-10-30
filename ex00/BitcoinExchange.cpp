@@ -18,11 +18,11 @@ Exchange::Exchange( void ) : db(std::map<std::string, float>()){
 	database.close();
 }
 
-Exchange::Exchange( const Exchange &e ){
+Exchange::Exchange( Exchange const &e ){
 	*this = e;
 }
 
-Exchange& Exchange::operator=( const Exchange &e ){
+Exchange& Exchange::operator=( Exchange const &e ){
 	if (this == &e)
 		return (*this);
 	this->db = e.db;
@@ -31,7 +31,27 @@ Exchange& Exchange::operator=( const Exchange &e ){
 
 Exchange::~Exchange( void ) {}
 
-static int	isFloat(std::string const &s, size_t const &dot){
+static int	isInt( std::string const &s )
+{
+	int	i;
+	int	num;
+
+	i = 0;
+	if (s.length() == 0 || s.length() > 12)
+		return (0);
+	num = atoi(s.c_str());
+	if (s[i] == '-')
+	{
+		if (num > 0)
+			return (0);
+		return (1);
+	}
+	if (num < 0)
+		return (0);
+	return (1);
+}
+
+static int	isFloat( std::string const &s, size_t const &dot ){
 	for (int i = dot - 1; i >= 0; i--)
 	{
 		if (s[i] < '0' || s[i] > '9')
@@ -45,7 +65,7 @@ static int	isFloat(std::string const &s, size_t const &dot){
 	return (1);
 }
 
-static long long	findDate( std::string const &s, std::size_t f1, std::size_t f2){
+static long long	findDate( std::string const &s, std::size_t f1, std::size_t f2 ){
 	std::string	str;
 
 	if (f1 == std::string::npos || f1 == f2)
@@ -166,7 +186,7 @@ std::map<std::string, float>&	Exchange::getMap( void ){
 	return (this->db);
 }
 
-std::ostream &operator<<(std::ostream & os, Exchange &e){
+std::ostream &operator<<( std::ostream &os, Exchange &e ){
 	std::map<std::string, float>::const_iterator it = e.getMap().begin();
 
 	for (int i = 0; it != e.getMap().end() ; it++)

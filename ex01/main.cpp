@@ -1,12 +1,12 @@
 #include "RPN.hpp"
 
 int main(int ac, char ** av){
-	std::string s;
-	size_t	i = 0;
+	std::string	s;
+	size_t		i = 0;
 
 	try
 	{
-		RPN rpn;
+		RPN	rpn;
 
 		if (ac != 2)
 			throw (FileException("Error: Need one and only argument!"));
@@ -20,7 +20,7 @@ int main(int ac, char ** av){
 				i++;
 				continue ;
 			}
-			else if (s[i] != '+' && s[i] != '-' && s[i] != 'x' && s[i] != '/' && (s[i] > '9' || s[i] < '0'))
+			else if (s[i] != '+' && s[i] != '-' && s[i] != '*' && s[i] != '/' && (s[i] > '9' || s[i] < '0'))
 				throw (FileException("Error: Syntax error!"));
 			else
 				rpn.compute(s[i]);

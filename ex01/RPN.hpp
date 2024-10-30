@@ -12,8 +12,8 @@ class RPN{
 
 	public:
 		RPN( void );
-		RPN( const RPN & );
-        RPN& operator=( const RPN & );
+		RPN( RPN const & );
+        RPN& operator=( RPN const & );
 		~RPN( void );
 
 	void	push( long long );
@@ -28,7 +28,7 @@ class FileException : public std::exception{
 		std::string	message;
 
 	public:
-		FileException( const char* );
+		FileException( const char * );
 		~FileException( void ) throw();
 		virtual const char* what() const throw();
 };

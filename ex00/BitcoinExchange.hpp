@@ -26,14 +26,14 @@ class Exchange{
 	std::map<std::string, float>&	getMap( void );
 };
 
-std::ostream &operator<<(std::ostream & , Exchange & );
+std::ostream &operator<<( std::ostream & , Exchange & );
 
 class FileException : public std::exception{
 	private:
 		std::string message;
 
 	public:
-		FileException( const char* msg );
+		FileException( const char * );
 		~FileException( void ) throw();
 		virtual const char* what() const throw();
 };

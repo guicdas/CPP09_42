@@ -2,12 +2,12 @@
 
 RPN::RPN( void ) : stack(std::stack<int>()) {}
 
-RPN::RPN( const RPN &r ){
+RPN::RPN( RPN const &r ){
     std::cout << "RPN Copy called!\n";
     *this = r;
 }
 
-RPN& RPN::operator=( const RPN &r ){
+RPN& RPN::operator=( RPN const &r ){
 	std::cout << "RPN Copy created!\n";
 	if (this != &r)
 		this->stack = r.stack;
@@ -42,7 +42,7 @@ void	RPN::compute( char c ) {
 		switch(c){
 			case '+':	push(left + right); break;
 			case '-':	push(left - right); break;
-			case 'x':	if (left * right > 2147483647)
+			case '*':	if (left * right > 2147483647)
 							throw (FileException("Error: Operation will result in overflow!"));
 						push(left * right); break;
 			case '/':	if (right == 0)
