@@ -25,6 +25,8 @@ class PMM{
 	private:
 		std::vector<unsigned int>	vec;
 		clock_t						vecTime;
+		std::vector<unsigned int>	tempVec;
+		clock_t						tempVecTime;
 		std::list<unsigned int>		lst;
 		clock_t						lstTime;
 
@@ -37,6 +39,7 @@ class PMM{
 	void	push( unsigned int );
 	void	showSequence( char const * );
 	void	sort( void );
+	clock_t	getTempVecTime( void );
 	clock_t	getVecTime( void );
 	int		getVecSize( void );
 	void	printLst( void );

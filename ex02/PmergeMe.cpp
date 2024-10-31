@@ -18,6 +18,23 @@ PMM& PMM::operator=( PMM const &p ){
 
 PMM::~PMM( void ) {}
 
+void	insertionSort(std::vector< unsigned int> &arr, int left, int right) {
+	int	j;
+
+	for (int i = left + 1; i <= right; ++i)
+	{
+		unsigned int key = arr[i];
+		j = i - 1;
+
+		while (j >= left && arr[j] > key)
+		{
+			arr[j + 1] = arr[j];
+			j--;
+		}
+		arr[j + 1] = key;
+	}
+}
+
 static void mergeVectors(std::vector<unsigned int> &vec, int left, int mid, int right) {
 	int n1 = mid - left + 1;
 	int n2 = right - mid;
@@ -46,22 +63,13 @@ static void mergeVectors(std::vector<unsigned int> &vec, int left, int mid, int 
 		vec[k++] = R[j++];
 }
 
-static void	mergeInsertSortVector(std::vector<unsigned int> &vec, int left, int right){	
-	int	temp;
-	
-	if (right - left < 2)
-	{
-		if (vec[left] > vec[right])
-		{
-			temp = vec[right];
-			vec[right] = vec[left];
-			vec[left] = temp;
-		}
-	}
+static void	mergeInsertSortVector(std::vector<unsigned int> &vec, int left, int right, int thresh){
+	if (right - left + 1 <= thresh)
+		insertionSort(vec, left, right);
 	else
 	{
-		mergeInsertSortVector(vec, left, left + (right - left) / 2);
-		mergeInsertSortVector(vec, (left + (right - left) / 2) + 1, right);
+		mergeInsertSortVector(vec, left, left + (right - left) / 2, thresh);
+		mergeInsertSortVector(vec, (left + (right - left) / 2) + 1, right, thresh);
 		mergeVectors(vec, left, left + (right - left) / 2, right);
 	}
 }
@@ -88,11 +96,11 @@ static std::list<unsigned int>	mergeLists( std::list<unsigned int> &l, std::list
 	return result;
 }
 
-static std::list<unsigned int>	mergeInsertSortList( std::list<unsigned int> &lst ){	
+static std::list<unsigned int>	mergeInsertSortList( std::list<unsigned int> &lst, int thresh ){	
 	std::list<unsigned int>::iterator	it, itemp;
 	std::list<unsigned int>				left, right;
 
-	if (lst.size() < 3)
+	if (lst.size() < thresh)
 	{
 		it = lst.begin();
 		itemp = it++;
@@ -108,21 +116,27 @@ static std::list<unsigned int>	mergeInsertSortList( std::list<unsigned int> &lst
 	right.splice(right.end(), lst, it, lst.end());
 	//std::cout << "right: " << right << std::endl;
 
-	left = mergeInsertSortList(left);
-	right = mergeInsertSortList(right);
+	left = mergeInsertSortList(left, thresh);
+	right = mergeInsertSortList(right, thresh);
 
 	return (mergeLists(left, right));
 }
 
 void	PMM::sort( void ){
+	std::vector<unsigned int> tempVec (this->vec);
 	this->vecTime = std::clock();
-	mergeInsertSortVector(this->vec, 0, this->vec.size() - 1);
+	mergeInsertSortVector(this->vec, 0, this->vec.size() - 1, 10);
 	this->vecTime =  std::clock() - this->vecTime;
 	if (!isSorted(this->vec.begin(), this->vec.end()) || this->vec.size() < 1)
 		throw (FileException("Vector wasn't sorted!"));
+	this->tempVecTime = std::clock();
+	mergeInsertSortVector(tempVec, 0, tempVec.size() - 1, 4);
+	this->tempVecTime =  std::clock() - this->tempVecTime;
+	if (!isSorted(tempVec.begin(), tempVec.end()) || tempVec.size() < 1)
+		throw (FileException("Vector wasn't sorted!"));
 	
 	this->lstTime = std::clock();
-	this->lst = mergeInsertSortList(this->lst);
+	this->lst = mergeInsertSortList(this->lst, 3);
 	this->lstTime = std::clock() - this->lstTime;
 	if (!isSorted(this->lst.begin(), this->lst.end()) || this->lst.size() < 1)
 		throw (FileException("List wasn't sorted!"));
@@ -130,6 +144,10 @@ void	PMM::sort( void ){
 
 clock_t	PMM::getVecTime( void ){
 	return (this->vecTime);
+}
+
+clock_t	PMM::getTempVecTime( void ){
+	return (this->tempVecTime);
 }
 
 int	PMM::getVecSize( void ){
